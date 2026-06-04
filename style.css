@@ -86,9 +86,9 @@ header {
   align-items: center;
   justify-content: center;
   padding: 0 8%;
-  background:
+  /*background:
     radial-gradient(circle at top right, rgba(94,234,212,0.08), transparent 30%),
-    radial-gradient(circle at bottom left, rgba(99,102,241,0.08), transparent 30%);
+    radial-gradient(circle at bottom left, rgba(99,102,241,0.08), transparent 30%);*/
 }
 
 .hero-content {
@@ -342,3 +342,14 @@ footer {
     padding: 5rem 6%;
   }
 }
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;         /* Explicitly pin to the left edge */
+  z-index: -1;
+  pointer-events: none; /* Stops the canvas from blocking clicks on your portfolio links */
+
+  overflow: hidden;
+}
+
