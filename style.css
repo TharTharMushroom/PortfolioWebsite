@@ -4,9 +4,9 @@
   --surface: #171923;
   --surface-light: #1f2330;
   --text: #f5f7fa;
-  --text-secondary: #aab1c3;
-  --accent: #5eead4;
-  --accent-hover: #2dd4bf;
+  --text-secondary: #f5f7fa;
+  --accent: #1e4d92;
+  --accent-hover: #2a69c6;
   --border: rgba(255,255,255,0.08);
   --shadow: 0 10px 30px rgba(0,0,0,0.35);
   --radius: 18px;
@@ -22,12 +22,19 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Inside style.css */
 body {
   font-family: 'Inter', sans-serif;
-  background: var(--bg);
+  background: transparent; /* <--- Change this to let the canvas show through */
   color: var(--text);
   line-height: 1.7;
 }
+
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 
 /* =========================
    NAVBAR
