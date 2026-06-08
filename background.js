@@ -1,4 +1,4 @@
-// 1. Declare global variables
+//Global variables
 let bg;
 let bubbles;
 let totalHeight;
@@ -6,14 +6,16 @@ let frame;
 let creatures;
 
 function setup() {
-  // p5.js already waits for the DOM, so you don't need the event listener
+  //Initialize canvas and variables
   initCanvas();
   bg = new BackgroundFade('#468faf', '#2c7da0', '#2a6f97', '#01497c', '#012a4a', '#0f1117');
   bubbles = [];
   creatures = [];
+  //Create bubbles
   for(let i = 0; i<80; i++){
     bubbles.push(new Bubble(randomNum(0, windowWidth), randomNum(0, totalHeight), randomNum(5, 20), randomNum(0.5,1.4)));
   }
+  //Create sea creatures
   for(let i = 0; i<10; i++){
     creatures.push(new SmallFish(randomNum(0, windowWidth), randomNum(0, totalHeight), 
     randomNum(20, 45), randomNum(0.3,0.6), randomNum(0.015, 0.04), randomNum(0.5, 1)));
@@ -21,7 +23,7 @@ function setup() {
   frame=0;
 }
 
-// Inside background.js
+//Initialize canvas
 function initCanvas() {
   totalHeight = Math.max(
     document.body.scrollHeight, 
@@ -30,10 +32,11 @@ function initCanvas() {
     document.documentElement.offsetHeight
   );
 
-  // Just create the canvas. Your style.css will handle the rest!
+  
   createCanvas(windowWidth, totalHeight);
 }
 
+//Preload images
 function preload(){
   bubbleImg = loadImage('assets/bubble.png');
   smallFishImg = loadImage('assets/smallFish.png');
@@ -43,10 +46,11 @@ function draw() {
   background(15, 17, 23);
   frame++;
   
-  // Update and draw the background first
+  //Update and draw background
   bg.updateVars();
   bg.drawBackground();
 
+  //Update bubbles
   for(let i = bubbles.length-1; i>=0; i--){
     bubbles[i].updateVars();
     bubbles[i].drawBubble();
@@ -54,6 +58,8 @@ function draw() {
       bubbles.splice(i, 1); 
     }
   }
+
+  //Update sea creatures
   for(let i = creatures.length-1; i>=0; i--){
     creatures[i].updateVars();
     creatures[i].drawCreature();
@@ -61,10 +67,13 @@ function draw() {
       creatures.splice(i, 1); 
     }
   }
+
+  //Create new bubbles
   if(frame%30==0&&bubbles.length<100){
     bubbles.push(new Bubble(randomNum(0, windowWidth), randomNum(totalHeight/1.3, totalHeight), randomNum(5, 20), randomNum(0.5,1.4)));
   }
 
+  //Create new sea creatures from the left or right
   if(frame%250==0&&creatures.length<15){
     if(randomNum(0,1)>0.5){
       creatures.push(new SmallFish(-20, randomNum(0, totalHeight), 
@@ -77,6 +86,7 @@ function draw() {
   }
 }
 
+//Resizes canvas with window
 function windowResized() {
   resizeCanvas(windowWidth, 1); 
   let actualContentHeight = Math.max(
@@ -90,18 +100,17 @@ function randomNum(lower, upper){
   return Math.random() * (upper-lower) + lower;
 }
 
+//Background gradient class
 class BackgroundFade {
+  //Gets all the colors
   constructor(c1, c2, c3, c4, c5, c6){
-    // 3. Store colors in an Array using 'this'
     this.colors = [c1, c2, c3, c4, c5, c6];
-    // Initialize an empty array for heights
     this.heights = []; 
-    // Run the update immediately to grab initial values
     this.updateVars();
   }
 
+  //Gets heights for each gradient
   updateVars(){
-    // 4. Update the heights Array directly
     this.heights = [
       document.querySelector('.hero').offsetHeight,
       document.getElementById('about').offsetHeight,
@@ -111,19 +120,14 @@ class BackgroundFade {
     ];
   }
 
+  //Creates gradient for each height
   drawBackground() {
     let currentY = 0;
-    
     for(let i = 0; i < this.heights.length; i++){
       let sectionHeight = this.heights[i];
-      
       if (sectionHeight > 0) {
-        // Grab the color for the current section and the next section
         let startColor = this.colors[i];
-        // Loops back to the first color at the very bottom, or change to this.colors[i] if you want it solid at the end
         let endColor = this.colors[i+1]; 
-
-        // Call the high-performance gradient system directly per section!
         this.setNativeGradient(0, currentY, windowWidth, sectionHeight, startColor, endColor);
         
         currentY += sectionHeight; 
@@ -131,7 +135,7 @@ class BackgroundFade {
     }
   }
 
-  // Uses the browser's hardware-accelerated canvas engine for a perfect blend
+  // Uses the browser's built-in gradient to draw gradient
   setNativeGradient(x, y, w, h, c1, c2) {
     let gradient = drawingContext.createLinearGradient(x, y, x, y + h);
     
@@ -144,6 +148,7 @@ class BackgroundFade {
   }
 }
 
+//Bubble class
 class Bubble {
   constructor(x, y, size, speed){
     this.x = x;
@@ -153,6 +158,7 @@ class Bubble {
     this.speed = speed;
   }
 
+  //Updates position and size
   updateVars(){
     if(this.currSize<this.maxSize){
       this.currSize += this.maxSize/30;
@@ -162,6 +168,7 @@ class Bubble {
     } 
   }
 
+  //Draws bubble using image
   drawBubble(){
     push();
     translate(this.x + this.currSize / 2, this.y + this.currSize / 2);
@@ -173,6 +180,7 @@ class Bubble {
 
 }
 
+//Sea creature superclass
 class SeaCreature{
   constructor(x, y, size, xSpeed, ySpeed, yOffset){
     this.x = x;
@@ -181,6 +189,7 @@ class SeaCreature{
     this.xSpeed = xSpeed;
     this.ySpeed = ySpeed;
     this.yOffset = yOffset;
+    //Sets direction based on spawning position
     if(x<windowWidth/2){
       this.direction = 1;
     }else{
@@ -189,12 +198,14 @@ class SeaCreature{
     this.counter = randomNum(0, 360);
   }
 
+  //Updates position
   updateVars(){
     this.counter += this.ySpeed;
     this.x += this.xSpeed*this.direction;
     this.y += sin(this.counter)*this.yOffset;
   }
 
+  //Draws placeholder creature with rect
   drawCreature(){
     rectMode(CENTER);
     fill(240);
@@ -203,16 +214,19 @@ class SeaCreature{
   }
 }
 
+//Small fish subclass
 class SmallFish extends SeaCreature{
   constructor(x, y, size, xSpeed, ySpeed, yOffset){
     super(x, y, size, xSpeed, ySpeed, yOffset);
   }
 
+  //Draws small fish using image
   drawCreature(){
     push();
     translate(this.x + this.size / 2, this.y + this.size / 2);
     imageMode(CENTER);
     tint(255, 128); 
+    //Changes direction of sprite
     scale(this.direction*-1, 1); 
     image(smallFishImg, 0, 0, this.size, this.size);
     pop();
